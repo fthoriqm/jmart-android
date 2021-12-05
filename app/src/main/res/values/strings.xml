@@ -1,0 +1,9 @@
+<resources>
+    <string-array name="shipmentPlans">
+        <item>INSTANT</item>
+        <item>SAME DAY</item>
+        <item>NEXT DAY</item>
+        <item>REGULER</item>
+        <item>KARGO</item>
+    </string-array>
+</resources>
