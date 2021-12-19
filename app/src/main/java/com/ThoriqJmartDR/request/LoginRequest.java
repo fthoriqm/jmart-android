@@ -6,6 +6,12 @@ import com.android.volley.toolbox.StringRequest;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * LoginRequest Class is used to manage the integration of android studio and postman rest api
+ *
+ * @author Fadlurrahman Thoriq Musyaffa
+ */
+
 public class LoginRequest extends StringRequest {
     private static final String URL = "http://10.0.2.2:5050/account/login";
     private final Map<String,String> params;
@@ -16,7 +22,6 @@ public class LoginRequest extends StringRequest {
         params.put("email", email);
         params.put("password", password);
     }
-
     public Map<String, String> getParams (){
         return  this.params;
     }

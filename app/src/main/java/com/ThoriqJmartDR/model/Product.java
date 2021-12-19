@@ -21,6 +21,6 @@ public class Product extends Serializable{
     }
 
     public String toString(){
-        return null; // bagian sini belum dibuat outputnya apa
+        return name; // bagian sini belum dibuat outputnya apa
     }
 }

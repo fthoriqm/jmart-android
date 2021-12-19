@@ -3,21 +3,28 @@ package com.ThoriqJmartDR;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.*;
 import com.ThoriqJmartDR.model.Account;
+import com.ThoriqJmartDR.model.Store;
 import com.ThoriqJmartDR.request.LoginRequest;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
-public class LoginActivity extends AppCompatActivity implements Response.Listener<String>, Response.ErrorListener{
+/**
+ * LoginActivity class is used to manage the application page of logging into an available account
+ *
+ * @author Fadlurrahman Thoriq Musyaffa
+ */
+public class LoginActivity extends AppCompatActivity{
     private static final Gson gson = new Gson();
-    private static final Account loggedAccount = null;
+    private static Account loggedAccount = null;
 
+    /**
+     * This method is used to get the logged account
+     *
+     * @return Account which defines the account that successfully logged in
+     */
     public static Account getLoggedAccount(){
         return loggedAccount;
     }
@@ -27,35 +34,54 @@ public class LoginActivity extends AppCompatActivity implements Response.Listene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        EditText emailEntryLogin = findViewById(R.id.emailEntryLogin);
-        EditText passwordEntryLogin = findViewById(R.id.passwordEntryLogin);
-        Button loginButton = (Button) findViewById(R.id.loginButton);
-        Button tvRegisterNow = (Button) findViewById(R.id.registerNow);
+        EditText emailLoginEntry = findViewById(R.id.emailLoginEntry);
+        EditText passwordLoginEntry = findViewById(R.id.passwordLoginEntry);
+        Button loginButton = findViewById(R.id.loginButton);
+        TextView textRegisterNow = findViewById(R.id.textRegisterNow);
 
-        loginButton.setOnClickListener(v -> {
-            Response.Listener<String> listener = response -> {
-                Toast.makeText(LoginActivity.this, "Login Successfully", Toast.LENGTH_SHORT).show();
-//                loggedAccount = gson.fromJson();
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-            };
-            Response.ErrorListener errorListener = error -> Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
-            String email = emailEntryLogin.getText().toString();
-            String password = passwordEntryLogin.getText().toString();
-            LoginRequest loginRequest = new LoginRequest(email, password, listener, errorListener);
-            RequestQueue queue = Volley.newRequestQueue(LoginActivity.this);
+        // For Developing Purposes
+        emailLoginEntry.setText("fadlurrahman.thoriq@gmail.com");
+        passwordLoginEntry.setText("Hello123*");
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        // What to do if the login button is clicked
+        loginButton.setOnClickListener(view -> {
+            String email = emailLoginEntry.getText().toString();
+            String password = passwordLoginEntry.getText().toString();
+            LoginRequest loginRequest = new LoginRequest(email, password, response -> {
+                try {
+                    loggedAccount = gson.fromJson(response, Account.class);
+                    Toast.makeText(getApplicationContext(), "Login Successful, Hello " + loggedAccount.name, Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(getApplicationContext(), "Error! Login Unsuccessful", Toast.LENGTH_LONG).show();
+                }
+            }, error -> Toast.makeText(getApplicationContext(), "Error!", Toast.LENGTH_LONG).show());
             queue.add(loginRequest);
         });
-        tvRegisterNow.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(intent);
-        });
+
+        // What to do if the register now text is clicked
+        textRegisterNow.setOnClickListener(view -> startActivity(new Intent(getApplicationContext(), RegisterActivity.class)));
     }
 
-    @Override
-    public void onErrorResponse(VolleyError error) {
+    /**
+     * This method is used to reload the account from json file
+     *
+     * @param response is used to reload the account based on certain parameter
+     */
+    public static void reloadLoggedAccount(String response){
+        loggedAccount = gson.fromJson(response, Account.class);
     }
-    @Override
-    public void onResponse(String response) {
+
+    /**
+     * This method is used to insert the store data into a specific account
+     *
+     * @param response is used to insert into the parameter specified account
+     */
+    public static void insertLoggedAccountStore(String response){
+        loggedAccount.store = gson.fromJson(response, Store.class);
     }
 }
